@@ -1,52 +1,103 @@
+<!--
+ * @Author: serendipity 2843306836@qq.com
+ * @Date: 2025-11-26 20:43:11
+ * @LastEditors: serendipity 2843306836@qq.com
+ * @LastEditTime: 2025-11-28 22:12:32
+ * @FilePath: \mini-ad-wall-web\src\App.vue
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, type Ref } from 'vue'
 import AdCard from '@/components/AdCard.vue'
 import AdDialog from '@/components/AdDialog.vue'
+import AdAPI from './api/ad'
+import type { AdForm } from './types/ad'
 
 interface Ad {
   id: number
   title: string
   content: string
+  author: string
   heat: number
-  price: number
+  bid: number
+  landingUrl: string
 }
 
-const ads = ref<Ad[]>([
-  {
-    id: 1,
-    title: '我是标题1',
-    content: '测试测试',
-    heat: 0,
-    price: 123,
-  },
-  {
-    id: 2,
-    title: '广告标题2',
-    content: '123123',
-    heat: 0,
-    price: 100,
-  },
-  {
-    id: 3,
-    title: '广告标题3',
-    content: '我是内容',
-    heat: 0,
-    price: 3,
-  },
-])
+const ads = ref<Ad[]>([])
+const isEdit = ref<boolean>(false)
 
 const dialogVisible = ref(false)
+const handleVisible = (isVisble: boolean) => {
+  dialogVisible.value = isVisble
+}
 const form = reactive({
   title: '',
-  publisher: '',
+  author: '',
   content: '',
-  landingPage: '',
-  price: 0.0,
+  landingUrl: '',
+  bid: 0.0,
 })
 
-const handleCreate = () => {
+const handleCreate = async (form: AdForm) => {
   dialogVisible.value = false
+  console.log('点击创建', form)
+  const res = await AdAPI.createAd(form)
+  getAds()
+  console.log(res)
 }
+const handleSubmit = async (form: AdForm) => {
+  await handleCreate(form)
+  Object.assign(form, {
+    title: '',
+    author: '',
+    content: '',
+    landingUrl: '',
+    bid: 0.0,
+  })
+}
+// 获取广告列表
+const getAds = async () => {
+  const res = await AdAPI.fetchAd()
+  ads.value = res.data
+  return res.data
+}
+
+const handleDelete = async (id: number) => {
+  await AdAPI.deleteAd(id)
+  getAds()
+}
+const handleEdit = async (ad: Ad) => {
+  isEdit.value = true
+  handleVisible(true)
+  // 直接使用传递过来的 ad 对象填充表单
+  Object.assign(form, {
+    title: ad.title,
+    author: ad.author,
+    content: ad.content,
+    bid: ad.bid,
+  })
+}
+const handleCopy = async (ad: Ad) => {
+  isEdit.value = false
+  // 复制数据到表单（不包含 id）
+  Object.assign(form, {
+    title: ad.title,
+    author: ad.author,
+    content: ad.content,
+    bid: ad.bid,
+    landingUrl: ad.landingUrl,
+  })
+  dialogVisible.value = true
+}
+const handleClick = async (ad: Ad) => {
+  console.log('点击卡片', ad)
+  await AdAPI.clickAd(ad.id)
+  await getAds()
+  window.open(ad.landingUrl, '_blank')
+}
+onMounted(async () => {
+  await getAds()
+})
 </script>
 
 <template>
@@ -87,14 +138,24 @@ const handleCreate = () => {
         <div
           v-for="ad in ads"
           :key="ad.id"
-          class="bg-white rounded-lg p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+          class="cursor-pointer bg-white rounded-lg p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+          @click="handleClick(ad)"
         >
-          <AdCard :content="ad.content" :title="ad.title" :price="ad.price" :heat="ad.heat" />
+          <AdCard
+            :ad="ad"
+            :content="ad.content"
+            :title="ad.title"
+            :price="ad.bid"
+            :clicks="ad.clicks"
+            @delete="handleDelete(ad.id)"
+            @edit="handleEdit"
+            @copy="handleCopy"
+          />
         </div>
       </div>
 
       <!-- Create Ad Dialog -->
-      <AdDialog :form="form" v-model="dialogVisible" @create="handleCreate" />
+      <AdDialog :is-edit="isEdit" :form="form" v-model="dialogVisible" @submit="handleSubmit" />
     </main>
   </div>
 </template>

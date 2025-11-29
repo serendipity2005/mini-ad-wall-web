@@ -1,8 +1,8 @@
 export interface AdForm {
   title: string
 
-  publisher: string
+  author: string
   content: string
-  landingPage: string
-  price: number
+  landingUrl: string
+  bid: number
 }

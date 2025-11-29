@@ -1,9 +1,10 @@
 <template>
   <!-- Card Header -->
-  <div class="flex justify-between items-start mb-4">
+  <div class="flex justify-between items-start mb-4" @click="emit('clickCard', props.ad)">
     <h3 class="font-bold text-gray-900 text-base">{{ title }}</h3>
     <el-dropdown trigger="click">
       <button
+        @click.stop
         class="border border-gray-200 rounded px-3 py-1 text-xs text-gray-600 flex items-center gap-1 hover:bg-gray-50 cursor-pointer bg-white hover:text-[#3B82F6] hover:border-[#3B82F6] transition-colors outline-none"
       >
         操作
@@ -23,9 +24,9 @@
       </button>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item>编辑广告</el-dropdown-item>
-          <el-dropdown-item>复制广告</el-dropdown-item>
-          <el-dropdown-item>删除广告</el-dropdown-item>
+          <el-dropdown-item @click.stop="emit('edit', props.ad)">编辑广告</el-dropdown-item>
+          <el-dropdown-item @click.stop="emit('copy', props.ad)">复制广告</el-dropdown-item>
+          <el-dropdown-item @click.stop="emit('delete')">删除广告</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -38,14 +39,23 @@
 
   <!-- Card Footer -->
   <div class="flex justify-between items-center text-sm">
-    <div class="text-red-500">热度：{{ heat }}</div>
+    <div class="text-red-500">热度：{{ clicks }}</div>
     <div class="text-[#1E40AF] font-medium">出价：{{ price }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-defineProps<{ content: string; title: string; price: number; heat: number }>()
+const props = defineProps<{
+  clicks: number
+  content: string
+  title: string
+  price: number
+  heat: number
+  ad: Ad
+}>()
+
+const emit = defineEmits(['edit', 'copy', 'delete', 'clickCard'])
 </script>
 
 <style scoped lang="scss"></style>
