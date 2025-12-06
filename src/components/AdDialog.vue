@@ -6,34 +6,7 @@
     width="600px"
     @close="handleClose"
   >
-    <!-- <el-form ref="formRef" :rules="formRules" :model="form" label-width="100px" class="mt-4">
-      <el-form-item prop="title" label="广告标题" required>
-        <el-input v-model="form.title" />
-      </el-form-item>
-      <el-form-item prop="author" label="发布人" required>
-        <el-input v-model="form.author" />
-      </el-form-item>
-      <el-form-item prop="content" label="内容文案" required>
-        <el-input v-model="form.content" type="textarea" :rows="4" />
-      </el-form-item>
-      <el-form-item prop="landingUrl" label="落地页" required>
-        <el-input v-model="form.landingUrl" />
-      </el-form-item>
-      <el-form-item prop="bid" label="出价" required>
-        <div class="flex items-center gap-2 w-full">
-          <el-input-number
-            v-model="form.bid"
-            :precision="2"
-            :step="1"
-            :min="0"
-            controls-position="right"
-            class="!w-48"
-          />
-          <span>元</span>
-        </div>
-      </el-form-item>
-    </el-form> -->
-
+  
     <DynamicForm
       v-if="formConfig.length > 0"
       ref="formRef"
@@ -54,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, nextTick } from 'vue'
 import { type AdForm } from '../types/ad'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import type { FormConfig } from '@/types/formConfig'
@@ -78,38 +51,19 @@ const emit = defineEmits<{
   (e: 'submit', form: AdForm): void
   (e: 'update:modelValue', value: boolean): void
 }>()
-// const formRules: FormRules = {
-//   title: [
-//     { required: true, message: '请输入广告标题', trigger: 'blur' },
-//     { min: 2, max: 50, message: '标题长度在 2 到 50 个字符', trigger: 'blur' },
-//   ],
-//   author: [{ required: true, message: '请输入作者名称', trigger: 'blur' }],
-//   content: [
-//     { required: true, message: '请输入广告内容', trigger: 'blur' },
-//     { min: 10, max: 500, message: '内容长度在 10 到 500 个字符', trigger: 'blur' },
-//   ],
-//   landingUrl: [
-//     { required: true, message: '请输入跳转链接', trigger: 'blur' },
-//     { type: 'url', message: '请输入正确的URL格式', trigger: 'blur' },
-//   ],
-//   bid: [
-//     { required: true, message: '请输入出价', trigger: 'blur' },
-//     { type: 'number', min: 0.01, message: '出价必须大于0', trigger: 'blur' },
-//   ],
-// }
+
 // 3. 处理关闭逻辑
 const handleClose = () => {
   formRef.value?.resetFields()
+
   emit('update:modelValue', false)
   emit('cancel')
 }
 
 const handleSubmit = async () => {
-  console.log('提交表单', formRef.value)
   if (!formRef.value) {
     return
   }
-
   const isValid = await formRef.value.validate()
 
   if (isValid) {
@@ -119,11 +73,15 @@ const handleSubmit = async () => {
     ElMessage.error('请完善表单信息后提交')
   }
 }
-
 watch(
-  () => props.formConfig,
+  () => props.modelValue,
   (newVal) => {
-    console.log('表单新配置', newVal)
+    if (newVal) {
+      // 对话框打开时，清除之前的验证错误
+      nextTick(() => {
+        formRef.value?.clearValidate()
+      })
+    }
   },
 )
 </script>

@@ -102,10 +102,13 @@ const validate = async (): Promise<boolean> => {
 const resetFields = () => {
   formRef.value?.resetFields()
 }
-
+const clearValidate = () => {
+  formRef.value?.clearValidate()
+}
 defineExpose({
   validate,
   resetFields,
+  clearValidate,
 })
 </script>
 

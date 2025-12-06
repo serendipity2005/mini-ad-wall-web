@@ -1,6 +1,6 @@
 // 引入封装好的 Axios 实例（推荐，已带请求拦截器、baseURL 等配置）
 import type { AdForm } from '@/types/ad'
-import request, { get, post, del } from '@/utils/request'
+import request, { get, post, del, patch } from '@/utils/request'
 // 若未封装，直接引入 axios：import axios from 'axios'
 
 // 定义 AdAPI 对象，封装所有广告相关接口
@@ -16,8 +16,6 @@ const AdAPI = {
     return get('/ads')
   },
   createAd: (data: AdForm) => {
-    console.log(data)
-
     return post('/ads/create', data)
   },
 
@@ -27,7 +25,9 @@ const AdAPI = {
   clickAd: (id: number) => {
     return post(`/ads/click/${id}`)
   },
-
+  updateAd: (id: number, data: AdForm) => {
+    return patch(`/ads/${id}`, data)
+  },
   fetchFormConfig: () => {
     return get('/ads/form-config')
   },

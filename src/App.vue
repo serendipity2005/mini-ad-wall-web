@@ -19,6 +19,7 @@ export interface Ad {
 
 const ads = ref<Ad[]>([])
 const isEdit = ref<boolean>(false)
+const currentAd = ref<Ad | null>(null)
 
 const dialogVisible = ref(false)
 const formConfig = ref<FormFieldConfig[]>([])
@@ -51,17 +52,6 @@ const handleCreate = async () => {
   await getFormConfig()
 }
 
-// 清空表单数据
-// const clearForm = () => {
-//   Object.assign(form, {
-//     title: '',
-//     author: '',
-//     content: '',
-//     landingUrl: '',
-//     bid: 0.0,
-//   })
-// }
-
 const clearForm = () => {
   Object.assign(form, {
     title: '',
@@ -84,8 +74,12 @@ const fillForm = (ad: Ad) => {
 }
 const handleSubmit = async (form: AdForm) => {
   dialogVisible.value = false
+  if (isEdit.value) {
+    await AdAPI.updateAd(currentAd.value!.id, form)
+  } else {
+    await AdAPI.createAd(form)
+  }
   isEdit.value = false
-  const res = await AdAPI.createAd(form)
   getAds()
   ElMessage.success('成功提交')
   clearForm()
@@ -102,7 +96,10 @@ const handleDelete = async (id: number) => {
   getAds()
 }
 const handleEdit = async (ad: Ad) => {
+  currentAd.value = ad
   isEdit.value = true
+  console.log(ad);
+  
   await getFormConfig()
   handleVisible(true)
   fillForm(ad)
@@ -110,7 +107,8 @@ const handleEdit = async (ad: Ad) => {
 const handleCopy = async (ad: Ad) => {
   isEdit.value = false
   // 复制数据到表单（不包含 id）
-  console.log(ad, 'ad')
+  currentAd.value = null
+
   await getFormConfig()
 
   fillForm(ad)
@@ -187,7 +185,7 @@ onMounted(async () => {
         :is-edit="isEdit"
         :form="form"
         v-model="dialogVisible"
-        @submit="handleSubmit"
+        @submit="handleSubmit( form)"
       />
     </main>
   </div>

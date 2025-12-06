@@ -54,5 +54,7 @@ export const del = <T = any>(url: string, params?: any): Promise<ApiResponse<T>>
 export const put = <T = any>(url: string, data?: any): Promise<ApiResponse<T>> => {
   return instance.put(url, data)
 }
-
+export const patch = <T = any>(url: string, data?: any): Promise<ApiResponse<T>> => {
+  return instance.patch(url, data)
+}
 export default instance
