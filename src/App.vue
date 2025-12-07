@@ -4,7 +4,7 @@ import AdCard from '@/components/AdCard.vue'
 import AdDialog from '@/components/AdDialog.vue'
 import AdAPI from './api/ad'
 import type { AdForm } from './types/ad'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormFieldConfig } from './types/formConfig'
 
 export interface Ad {
@@ -98,8 +98,8 @@ const handleDelete = async (id: number) => {
 const handleEdit = async (ad: Ad) => {
   currentAd.value = ad
   isEdit.value = true
-  console.log(ad);
-  
+  console.log(ad)
+
   await getFormConfig()
   handleVisible(true)
   fillForm(ad)
@@ -115,9 +115,11 @@ const handleCopy = async (ad: Ad) => {
   dialogVisible.value = true
 }
 const handleClick = async (ad: Ad) => {
-  await AdAPI.clickAd(ad.id)
-  await getAds()
-  window.open(ad.landingUrl, '_blank')
+  ElMessageBox.confirm('是否跳转到新的页面？', '提示').then(async () => {
+    await AdAPI.clickAd(ad.id)
+    await getAds()
+    window.open(ad.landingUrl, '_blank')
+  })
 }
 
 onMounted(async () => {
@@ -185,7 +187,7 @@ onMounted(async () => {
         :is-edit="isEdit"
         :form="form"
         v-model="dialogVisible"
-        @submit="handleSubmit( form)"
+        @submit="handleSubmit(form)"
       />
     </main>
   </div>
