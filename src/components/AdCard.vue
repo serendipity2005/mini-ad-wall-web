@@ -1,7 +1,7 @@
 <template>
   <!-- Card Header -->
   <div class="flex justify-between items-start mb-4" @click="emit('clickCard', props.ad)">
-    <h3 class="font-bold text-gray-900 text-base">{{ title }}</h3>
+    <h3 class="font-bold break-all max-w-[80%] text-gray-900 text-base">{{ title }}</h3>
     <el-dropdown trigger="click">
       <button
         @click.stop
@@ -47,7 +47,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
 import { type Ad } from '@/types/ad.ts'
 import { ElMessage, ElMessageBox } from 'element-plus'
 const props = defineProps<{
@@ -71,7 +70,7 @@ const handleDelete = () => {
         type: 'success',
         message: '删除成功',
       })
-    } catch (error) {
+    } catch {
       ElMessage({
         type: 'error',
         message: '删除失败',

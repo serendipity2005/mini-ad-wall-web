@@ -47,8 +47,8 @@
         v-bind="field.componentProps"
       >
         <el-option
-          v-for="option in field.componentProps?.options || []"
-          :key="option.value"
+          v-for="option in getOptions(field)"
+          :key="String(option.value)"
           :label="option.label"
           :value="option.value"
         />
@@ -58,18 +58,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import type { FormInstance } from 'element-plus'
 import type { FormFieldConfig } from '@/types/formConfig'
 import { buildFormRules } from '@/utils/formValidator'
 
+type SelectOption = { label: string; value: unknown; disabled?: boolean }
+const getOptions = (field: FormFieldConfig): SelectOption[] => {
+  const raw = (field.componentProps as { options?: SelectOption[] })?.options ?? []
+  return Array.isArray(raw) ? (raw as SelectOption[]) : []
+}
+
 const props = defineProps<{
   formConfig: FormFieldConfig[]
-  form: Record<string, any>
+  form: Record<string, unknown>
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Record<string, any>): void
+  (e: 'update:modelValue', value: Record<string, unknown>): void
 }>()
 
 const formRef = ref<FormInstance>()

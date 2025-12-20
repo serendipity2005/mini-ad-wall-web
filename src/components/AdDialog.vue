@@ -6,7 +6,6 @@
     width="600px"
     @close="handleClose"
   >
-  
     <DynamicForm
       v-if="formConfig.length > 0"
       ref="formRef"
@@ -27,9 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, nextTick } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { type AdForm } from '../types/ad'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import { ElMessage, type FormInstance } from 'element-plus'
 import type { FormConfig } from '@/types/formConfig'
 const formRef = ref<FormInstance>()
 

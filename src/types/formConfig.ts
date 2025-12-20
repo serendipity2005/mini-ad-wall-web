@@ -16,7 +16,7 @@ export interface FormFieldConfig {
   component: 'Input' | 'InputNumber' | 'TextArea' | 'Select'
   validator?: FormFieldValidator
   placeholder?: string
-  componentProps?: Record<string, any>
+  componentProps?: Record<string, unknown>
 }
 
 export type FormConfig = FormFieldConfig[]
