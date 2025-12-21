@@ -5,7 +5,7 @@
     <el-dropdown trigger="click">
       <button
         @click.stop
-        class="border border-gray-200 rounded px-3 py-1 text-xs text-gray-600 flex items-center gap-1 hover:bg-gray-50 cursor-pointer bg-white hover:text-[#3B82F6] hover:border-[#3B82F6] transition-colors outline-none"
+        class="border whitespace-nowrap border-gray-200 rounded px-3 py-1 text-xs text-gray-600 flex items-center gap-1 hover:bg-gray-50 cursor-pointer bg-white hover:text-[#3B82F6] hover:border-[#3B82F6] transition-colors outline-none"
       >
         操作
         <svg
